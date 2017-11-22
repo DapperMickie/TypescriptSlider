@@ -1,39 +1,48 @@
 import { SliderOptions } from './sliderOptions';
+import * as $ from 'jquery';
 
 export class Slide {
     url:string;
     index:number;
     hasPreview: boolean;
-    preview?:HTMLElement;
+    preview?:JQuery;
 
     constructor(url:string, index:number, preview?:string) {
         this.url = url;
         this.index = index;
 
-        if (preview === null) {
+        if (!preview) {
             this.hasPreview = false;
         } else {
             this.hasPreview = true;
-            this.preview = document.getElementById(preview);
+            this.preview = $(preview);
         }
     }
 } 
 
 
 export class Slider {
-    slides: Slide[];
+    slides: Slide[] = [];
     nextButton:string;
     previousButton:string;
     currentSlide:number;
-    maxSlides:number = this.slides.length-1;
-    container:Element;
+    maxSlides:number = 0;
+    container:JQuery;
+    options:SliderOptions;
     
-    constructor(slides:Slide[], options:SliderOptions = new SliderOptions()) {
-        this.slides=slides;    
+    constructor(slides:string[], options:SliderOptions = new SliderOptions()) {
+        let i:number = 0;
+        
+        slides.forEach(urlString => {
+            this.slides.push(new Slide(urlString, i));
+            i++;
+        }); 
+        this.options = options;
+        this.maxSlides = this.slides.length-1
         this.previousButton = options.previousButton;
         this.nextButton = options.nextButton;
 
-        this.container = document.getElementsByClassName(options.sliderClass)[0];
+        this.container = $(this.options.sliderClass);
     }
 
     create() {
@@ -45,7 +54,7 @@ export class Slider {
             throw new Error("Cannot bind to container element");
         }
 
-
+        this.container.data({nndslider:true});
     }
 
     goNext() {

@@ -14,19 +14,19 @@ define("sliderOptions", ["require", "exports"], function (require, exports) {
     }());
     exports.SliderOptions = SliderOptions;
 });
-define("slider", ["require", "exports", "sliderOptions"], function (require, exports, sliderOptions_1) {
+define("slider", ["require", "exports", "sliderOptions", "jquery"], function (require, exports, sliderOptions_1, $) {
     "use strict";
     exports.__esModule = true;
     var Slide = /** @class */ (function () {
         function Slide(url, index, preview) {
             this.url = url;
             this.index = index;
-            if (preview === null) {
+            if (!preview) {
                 this.hasPreview = false;
             }
             else {
                 this.hasPreview = true;
-                this.preview = document.getElementById(preview);
+                this.preview = $(preview);
             }
         }
         return Slide;
@@ -35,11 +35,19 @@ define("slider", ["require", "exports", "sliderOptions"], function (require, exp
     var Slider = /** @class */ (function () {
         function Slider(slides, options) {
             if (options === void 0) { options = new sliderOptions_1.SliderOptions(); }
+            var _this = this;
+            this.slides = [];
+            this.maxSlides = 0;
+            var i = 0;
+            slides.forEach(function (urlString) {
+                _this.slides.push(new Slide(urlString, i));
+                i++;
+            });
+            this.options = options;
             this.maxSlides = this.slides.length - 1;
-            this.slides = slides;
             this.previousButton = options.previousButton;
             this.nextButton = options.nextButton;
-            this.container = document.getElementsByClassName(options.sliderClass)[0];
+            this.container = $(this.options.sliderClass);
         }
         Slider.prototype.create = function () {
             if (this.slides.length === 0) {
@@ -48,6 +56,7 @@ define("slider", ["require", "exports", "sliderOptions"], function (require, exp
             if (this.container === null) {
                 throw new Error("Cannot bind to container element");
             }
+            this.container.data({ nndslider: true });
         };
         Slider.prototype.goNext = function () {
             var slide = this.currentSlide + 1;
@@ -73,13 +82,8 @@ define("slider", ["require", "exports", "sliderOptions"], function (require, exp
 define("main", ["require", "exports", "slider"], function (require, exports, slider_1) {
     "use strict";
     exports.__esModule = true;
-    var params = ["/assets/img/image1.jpg", "/assets/img/image2.jpg", "/assets/img/image3.jpg", "/assets/img/image4.jpg", "/assets/img/image5.jpg"];
-    var slides;
-    var i = 0;
-    params.forEach(function (urlString) {
-        slides.push(new slider_1.Slide(urlString, i));
-        i++;
-    });
+    var slides = ["/assets/img/image1.jpg", "/assets/img/image2.jpg", "/assets/img/image3.jpg", "/assets/img/image4.jpg", "/assets/img/image5.jpg"];
     var nndSlider = new slider_1.Slider(slides);
     nndSlider.create();
+    alert("disc");
 });
